@@ -1,0 +1,20 @@
+addCar = (req, res) => {
+    try {
+        const { CarName, price } = req.body
+        var tmpRecordId = create_UUID();
+        var tableType = '<' + prefix + 'Car>';
+        var CarId = '<' + resourcePrefix + 'Car/' + tmpRecordId + '>';
+
+        var Car_Data = {
+            'CarName': CarName,
+            'price': price
+        }
+
+        var query = gen_query(Car_Data, CarId, tableType, "post")
+        var cardata = send_request(query, "post")
+
+        res.status(200).json({ message: "Data Saved", id: CarId })
+    } catch (error) {
+        console.log(error);
+    }
+}
