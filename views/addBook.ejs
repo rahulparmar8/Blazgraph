@@ -1,0 +1,55 @@
+<%- include('assets/navbar') %> <%- include('assets/header') %>
+
+<div class="row" style="justify-content: center">
+  <div class="col-sm-6 mt-5">
+    <h2 class="alert alert-success text-center">Add Book</h2>
+    <form method="POST">
+      <div class="mb-3">
+        <label for="booktitle" class="form-label">BookTitle</label>
+        <input
+          value="<%= bodyData && bodyData.BookTitle ? bodyData.BookTitle : '' %>"
+          id="BookTitle"
+          name="BookTitle"
+          type="text"
+          class="form-control"
+          autocomplete="off"
+        />
+      </div>
+      <% if(typeof alert !='undefined' ) { %> <% alert.forEach(function(error) {
+        %> <% if(error.param=='BookTitle' ){%>
+        <div style="color: red"><%= error.msg %></div>
+        <%} })} %>
+      <div class="mb-3">
+        <label for="price" class="form-label">Price</label>
+        <input
+          id="price"
+          name="price"
+          type="text"
+          class="form-control"
+          autocomplete="off"
+        />
+      </div>
+      <% if(typeof alert !='undefined' ) { %> <% alert.forEach(function(error) {
+        %> <% if(error.param=='price' ){%>
+        <div style="color: red"><%= error.msg %></div>
+        <%} })} %>
+      <div class="mb-3">
+        <label for="authorname" class="form-label">Author Name</label>
+        <input
+          id="authorname"
+          name="authorname"
+          type="text"
+          class="form-control"
+          autocomplete="off"
+        />
+      </div>
+      <% if(typeof alert !='undefined' ) { %> <% alert.forEach(function(error) {
+        %> <% if(error.param=='AuthorName' ){%>
+        <div style="color: red"><%= error.msg %></div>
+        <%} })} %>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</div>
+
+<%- include('assets/footer') %>

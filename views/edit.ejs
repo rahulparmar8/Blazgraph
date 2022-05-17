@@ -1,0 +1,48 @@
+<%- include('assets/navbar') %> <%- include('assets/header') %>
+
+<div class="row" style="justify-content: center">
+  <div class="col-sm-6 mt-5">
+    <h2 class="alert alert-secondary text-center">Edit Book</h2>
+    <form method="POST">
+      <div class="mb-3">
+        
+        <label for="booktitle" class="form-label">BookTitle</label>
+        <input
+          value="<%= data.BookTitle.value %>"
+          id="booktitle"
+          name="BookTitle"
+          type="text"
+          class="form-control"
+          autocomplete="off"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="price" class="form-label">Price</label>
+        <input
+        value="<%= data.price.value %>"
+          id="price"
+          name="price"
+          type="text"
+          class="form-control"
+          autocomplete="off"
+        />
+      </div> 
+      <div class="mb-3">
+        <label for="AuthorName" class="form-label">Author Name</label>
+        <input
+          value="<%= data.AuthorName.value %>"
+          id="AuthorName"
+          name="AuthorName"
+          type="text"
+          class="form-control"
+          autocomplete="off"
+        />
+      </div>
+
+
+      <button type="submit" class="btn btn-outline-info">Update</button>
+    </form>
+  </div>
+</div>
+
+<%- include('assets/footer') %>

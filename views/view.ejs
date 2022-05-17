@@ -1,0 +1,29 @@
+<%- include('assets/navbar') %> <%- include('assets/header') %>
+
+<div class="row" style="justify-content: center">
+  <div class="col-sm-6 mt-5">
+    <h2 class="alert alert-secondary text-center">View BookDetails</h2>
+    <form method="POST">
+      <div class="mb-3">
+        
+        <label for="booktitle" class="form-label">BookTitle :-</label>
+        <label for="booktitle" class="form-label"><%= data.BookTitle.value %></label>
+    
+      </div>
+      <div class="mb-3">
+        <label for="price" class="form-label">Price :-</label>
+        <label
+        for="price" class="form-label"><%= data.price.value %></label>
+      </div>
+      <div class="mb-3">
+        <label for="AuthorName" class="form-label">Author :-</label>
+        <label
+        for="AuthorName" class="form-label"><%= data.AuthorName.value %></label>
+      </div>
+
+    
+    </form>
+  </div>
+</div>
+
+<%- include('assets/footer') %>

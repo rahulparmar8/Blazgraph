@@ -1,4 +1,4 @@
-addCar = (req, res) => {
+yaddCar = (req, res) => {
     try {
         const { CarName, price } = req.body
         var tmpRecordId = create_UUID();
@@ -18,3 +18,4 @@ addCar = (req, res) => {
         console.log(error);
     }
 }
+
