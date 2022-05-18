@@ -6,7 +6,6 @@
         <h2 class="alert alert-secondary text-center">Book List </h2>
 
 
-
         <table class="table table-striped">
           <thead>
             <tr>
@@ -67,7 +66,7 @@
         <% if (current==1) { %>
           <li class="page-item disabled"><a class="page-link" aria-disabled="true">Previous</a></li>
           <% } else { %>
-            <li><a class="page-link" href="/booklist/<%=Number(current)-1%>">Previous</a></li>
+            <li><a class="page-link" href="/newlist/<%=Number(current)-1%>">Previous</a></li>
             <% } %>
               <% var i=(Number(current)> 5 ? Number(current) - 4 : 1) %>
                 <% if (i !==1) { %>
@@ -79,7 +78,7 @@
                             <%= i %>
                           </a></li>
                         <% } else { %>
-                          <li><a class="page-link" href="/booklist/<%= i %>">
+                          <li><a class="page-link" href="/newlist/<%= i %>">
                               <%= i %>
                             </a></li>
                           <% } %>
@@ -91,7 +90,7 @@
                                     <li class="page-item disabled"><a class="page-link">Next</a></li>
                                     <% } else { %>
                                       <li class="page-item"><a class="page-link"
-                                          href="/booklist/<%= Number(current)+1 %>">Next</a></li>
+                                          href="/newlist/<%= Number(current)+1 %>">Next</a></li>
                                       <% } %>
       </ul>
       <% } %>

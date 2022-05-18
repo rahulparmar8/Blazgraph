@@ -48,62 +48,64 @@ export default class User {
 
     newAllBookList = (req, res) => {
         try {
-
+            const perPage = 5;
+            const page = req.params.page || 1;
+            const startingIndex = perPage * (page - 1) * 3 - (page - 1)
+            const endingIndex = ((page * perPage) * 3) - 1
             let tableType = '<' + prefix + 'Book>';
-            var BookId = '<' + resourcePrefix + 'Book/' + '>';
 
             let query1 = querystring.stringify({
                 'query': 'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
                     'CONSTRUCT {' +
-                    BookId + ' dc:BookTitle ?BookTitle .' +
-                    BookId + ' dc:price ?price .' +
-                    BookId + ' dc:AuthorName ?AuthorName ;}' +
+                    '?BookId  dc:BookTitle ?BookTitle .' +
+                    '?BookId  dc:price ?price .' +
+                    '?BookId  dc:AuthorName ?AuthorName ;}' +
                     'WHERE { ' +
-                    '?bookId a ' + tableType + ' .' +
-                    BookId + ' dc:BookTitle ?BookTitle. ' +
-                    BookId + ' dc:price  ?price.' +
-                    BookId + ' dc:AuthorName  ?AuthorName ;}'
+                    '?BookId a ' + tableType + ' .' +
+                    '?BookId  dc:BookTitle ?BookTitle. ' +
+                    '?BookId  dc:price  ?price.' +
+                    '?BookId  dc:AuthorName  ?AuthorName ;}'
             });
-            console.log('====', query1)
-            // console.log(id);
+            // console.log('query====', query1)
             send_request(query1, "get", function (err, user) {
                 // console.log("*************",user);
                 if (err) {
                     res.status(400).json({ message: "error", })
                 }
                 let arr = []
-
+                // console.log('user====',user)
                 user = JSON.parse(user);
+
                 if (user.results.bindings) {
                     let response = user.results.bindings;
-
-                    for (let i = startingIndex; i < endingIndex; i++) {
-                        if (i > response.length - 1) {
+                    // console.log(response.length / 3);
+                    for (let i = startingIndex; i < (endingIndex); i++) {
+                        if (i > response.length - 3) {
                             break;
                         }
 
                         arr.push({
-                            'BookId': response[i]['bookId']['value'],
-                            'BookTitle': response[i]['BookTitle']['value'],
-                            'BookPrice': response[i]['price']['value'],
-                            'AuthorName': response[i]['AuthorName']['value']
+                            'BookId': response[i]['subject']['value'],
+                            'BookTitle': response[i]['object']['value'],
+                            'BookPrice': response[i + 1]['object']['value'],
+                            'AuthorName': response[i + 2]['object']['value']
                         })
+                        i = i + 2
                     }
-                    // let totalPage = response.length / perPage
-                    // if (totalPage - parseInt(totalPage) != 0) {
-                    //     totalPage = parseInt(totalPage) + 1
-                    // }
+                    // console.log(arr);
+                    let totalPage = (response.length / 3) / perPage
+                    if (totalPage - parseInt(totalPage) != 0) {
+                        totalPage = parseInt(totalPage) + 1
+                    }
                     // console.log(totalPage);
-
-                    res.render("bookList")
-                    // , {
-                    //     data: arr,
-                    //     current: page,
-                    //     pages: totalPage
-                    // })
+                    // console.log("current", page);
+                    // console.log("totalPage", totalPage);
+                    res.render("bookList", {
+                        data: arr,
+                        current: page,
+                        pages: totalPage
+                    })
                 }
-                // res.status(200).json({ response: arr })
-                // console.log(arr);
             });
         } catch (error) {
             console.log(error);

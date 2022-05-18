@@ -18,7 +18,7 @@ router.post("/book",
         .optional(),
     user.addBook);
 router.get("/booklist/:page", user.AllBookList)
-router.get("/newlist", user.newAllBookList)
+router.get("/newlist/:page", user.newAllBookList)
 router.get("/edit/:id", user.editData)
 router.post("/edit/:id", user.editBookData)
 router.get("/view/:id", user.oneRecordGet)
