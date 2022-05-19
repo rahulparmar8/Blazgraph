@@ -8,7 +8,7 @@
         
         <label for="booktitle" class="form-label">BookTitle</label>
         <input
-          value="<%= data.BookTitle.value %>"
+          value="<%= data?.BookTitle?.value %>"
           id="booktitle"
           name="BookTitle"
           type="text"
@@ -30,7 +30,7 @@
       <div class="mb-3">
         <label for="AuthorName" class="form-label">Author Name</label>
         <input
-          value="<%= data.AuthorName.value %>"
+          value="<%= data?.AuthorName?.value %>"
           id="AuthorName"
           name="AuthorName"
           type="text"
@@ -38,7 +38,6 @@
           autocomplete="off"
         />
       </div>
-
 
       <button type="submit" class="btn btn-outline-info">Update</button>
     </form>

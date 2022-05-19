@@ -53,26 +53,6 @@ function book_query(req, cb) {
 }
 
 
-//  Get Data Function    //
-
-// function bookData(get_data) {
-//     const { BookTitle, price } = req.body
-//     var tmpRecordId = create_UUID();
-//     var tableType = '<' + prefix + 'Book>';
-//     var BookId = '<' + resourcePrefix + 'Book/' + tmpRecordId + '>';
-
-//     var data_field = {
-//         'BookTitle': BookTitle,
-//         'price': price,
-//     };
-//  console.log(bodyData);
-// }
-
-
-
-
-
-
 //  Request Send    //
 
 function send_request(request_query, request_type, cb) {

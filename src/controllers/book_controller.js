@@ -46,7 +46,7 @@ export default class User {
     };
 
     //  GET USE  CONSTRUCT All BookList Data    //
-
+   
     newAllBookList = (req, res) => {
         try {
             const perPage = 5;
@@ -74,6 +74,8 @@ export default class User {
                 if (err) {
                     res.status(400).json({ message: "error", })
                 }
+
+
                 let arr = []
                 // console.log('user====',user)
                 user = JSON.parse(user);
@@ -238,10 +240,11 @@ export default class User {
 
         }
     }
+
     //  Update Data GET //
     editData = (req, res) => {
         try {
-            // console.log("body params",req.params)
+            console.log("body params", req.params)
 
             let id = '<' + resourcePrefix + 'Book/' + req.params.id + '>';
             let tableType = '<' + prefix + 'Book>';
@@ -251,8 +254,8 @@ export default class User {
                 id + ' a ' + tableType + ' .' +
                 id + ' dc:BookTitle ?BookTitle. ' +
                 id + ' dc:price  ?price. ' +
-                id + ' dc:AuthorName  ?AuthorName. }'
-                
+                // id + ' dc:AuthorName  ?AuthorName. }'
+                'OPTIONAL {' + id + ' dc:AuthorName  ?AuthorName. }}'
             let final_update_query = querystring.stringify({
                 'query': get_query
             })
@@ -273,17 +276,15 @@ export default class User {
                     }
                     // console.log("**************", response, "**************", body)
                     // res.status(200).json({ message:response})
-                    // return res.redirect("edit")
 
                     if (body) {
                         let data = JSON.parse(body).results.bindings[0];
-                        console.log('data',data)
+                        // console.log('data----------', data)
                         return res.render("edit", {
                             data: data
                         })
                     }
                 });
-            // console.log('editData', editData)
         } catch (error) {
             console.log(error)
         }
@@ -293,52 +294,44 @@ export default class User {
 
     editBookData = (req, res) => {
         try {
-            // console.log("body",req.body)
-            // console.log('post===', req)
-            const id = req.params.id
-            let tmpRecordId = create_UUID();
-            let tableType = '<' + prefix + 'Book>';
-            let BookId = req.body.id
+            let id = req.params.id
             let BookTitle = req.body.BookTitle
             let price = req.body.price
             let AuthorName = req.body.AuthorName
             let prefixId = "<http://local.demo.com/#/knowledge/Book/"
-            // console.log(id);
+            //  console.log(id);
+
+            var data_field = {}
+            data_field.BookTitle = BookTitle
+            data_field.price = price
+            if (AuthorName)
+                data_field.AuthorName = AuthorName
+
             // console.log(BookTitle);
             let edit_query = 'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
                 'DELETE { '
-            if ("BookTitle" in req.body) {
-                edit_query += prefixId + id + '> dc:BookTitle ?BookTitle .'
-            }
-            if ("price" in req.body) {
-                edit_query += prefixId + id + '> dc:price ?price .'
-            }
-            if ("AuthorName" in req.body) {
-                
-                edit_query += prefixId + id + '> dc:AuthorName ?AuthorName .'
+            edit_query += prefixId + id + '> dc:BookTitle ?BookTitle .'
+            edit_query += prefixId + id + '> dc:price ?price .'
+            edit_query += prefixId + id + '> dc:AuthorName ?AuthorName .'
+
+            edit_query += '} INSERT {'
+            for (var key in data_field) {
+                if (data_field.hasOwnProperty(key)) {
+                    edit_query += prefixId + id + '> dc:' + key + '"' + data_field[key] + '". '
+                }
             }
             edit_query += '}' + 'WHERE { '
-            if ("BookTitle" in req.body) {
-                edit_query += prefixId + id + '> dc:BookTitle ?BookTitle .'
-            }
-            if ("price" in req.body) {
-                edit_query += prefixId + id + '> dc:price ?price .'
-            }
-            if ("AuthorName" in req.body) {
-                edit_query += prefixId + id + '> dc:AuthorName ?AuthorName .'
-            }
-            edit_query += '}; INSERT {'
-            if ("BookTitle" in req.body) {
-                edit_query += prefixId + id + '> dc:BookTitle "' + BookTitle + '" .'
-            }
-            if ("price" in req.body) {
-                edit_query += prefixId + id + '> dc:price "' + price + '" .'
-            }
-            if ("AuthorName" in req.body) {
-                edit_query += prefixId + id + '> dc:AuthorName "' + AuthorName + '" .'
-            }
-            edit_query += '} WHERE { BIND(NOW() as ?created) }'
+            edit_query += prefixId + id + '> dc:BookTitle ?BookTitle .'
+            edit_query += prefixId + id + '> dc:price ?price .'
+            edit_query += 'OPTIONAL {' + prefixId + id + '> dc:AuthorName  ?AuthorName. }}'
+            // edit_query += prefixId + id + '> dc:AuthorName ?AuthorName .}'
 
+            // edit_query += prefixId + id + '> dc:BookTitle "' + BookTitle + '" .'
+            // edit_query += prefixId + id + '> dc:price "' + price + '" .'
+            // 'OPTIONAL {' + edit_query + prefixId + id + '> dc:AuthorName  ?AuthorName. }}'
+            // edit_query += prefixId + id + '> dc:AuthorName "' + AuthorName + '
+
+            // console.log("\n", edit_query, "\n");
             let edit_data = querystring.stringify({
                 'update': edit_query
             })
@@ -396,11 +389,6 @@ export default class User {
                 },
                 function (error, response, body) {
                     let data = JSON.parse(body)['results']['bindings'][0]
-                    // console.log("DATA___",data);
-                    // let data = body
-                    // let arr = []
-                    // let bookTitle = data[0]['BookTitle']['value']
-                    // let bookPrice = data[0]['price']['value']
 
                     if (error) {
                         return res.status(400).json({ message: "Error", })
