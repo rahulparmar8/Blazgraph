@@ -10,34 +10,36 @@ function create_UUID() {
     return dt;
 }
 
-
 //  Query Generate  //
 function book_query(req, cb) {
 
-
-    const { BookTitle, price ,authorname } = req.body
+    const { BookTitle, price, authorname } = req.body
     // console.log(req.body)
     var tmpRecordId = create_UUID();
     var tableType = '<' + prefix + 'Book>';
     var BookId = '<' + resourcePrefix + 'Book/' + tmpRecordId + '>';
 
-    var data_field = {
-        'BookTitle': BookTitle,
-        'price': price,
-        'AuthorName': authorname,
-        'id' : BookId
-    }
+    var data_field = {}
+
+    data_field.BookTitle = BookTitle
+    data_field.price = price
+    if (authorname)
+        data_field.AuthorName = authorname
+    data_field.id = BookId
+
+
 
     var q1 = 'prefix dc: <http://purl.org/dc/elements/1.1/>' +
         ' INSERT  { ' +
         BookId + ' a ' + tableType + '. '
-   
+
     for (var key in data_field) {
         if (data_field.hasOwnProperty(key)) {
+
             var q1 = q1 + BookId + ' dc:' + key + '"' + data_field[key] + '". '
         }
     }
-
+    // console.log("\nquery-----\n", q1, '\n');
     var q1 = q1 + '} WHERE { BIND(NOW() as ?created )}';
     var query = querystring.stringify({ 'update': q1 });
 

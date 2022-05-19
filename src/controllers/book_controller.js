@@ -30,6 +30,7 @@ export default class User {
                     alert: errors.array(),
                     bodyData: req.body,
                 });
+
             }
             book_query(req, function (err, response) {
                 if (err) {
@@ -37,7 +38,7 @@ export default class User {
                 }
                 // console.log('response', response)
                 // res.status(200).json({ response: response, })
-                return res.redirect("/booklist/1")
+                return res.redirect("/newlist/1")
             })
         } catch (error) {
             console.log(error);
@@ -50,9 +51,10 @@ export default class User {
         try {
             const perPage = 5;
             const page = req.params.page || 1;
-            const startingIndex = perPage * (page - 1) * 3 - (page - 1)
+            const startingIndex = perPage * (page - 1) * 3
             const endingIndex = ((page * perPage) * 3) - 1
             let tableType = '<' + prefix + 'Book>';
+
 
             let query1 = querystring.stringify({
                 'query': 'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
@@ -64,7 +66,7 @@ export default class User {
                     '?BookId a ' + tableType + ' .' +
                     '?BookId  dc:BookTitle ?BookTitle. ' +
                     '?BookId  dc:price  ?price.' +
-                    '?BookId  dc:AuthorName  ?AuthorName ;}'
+                    'OPTIONAL { ?BookId dc:AuthorName  ?AuthorName .}}'
             });
             // console.log('query====', query1)
             send_request(query1, "get", function (err, user) {
@@ -75,31 +77,41 @@ export default class User {
                 let arr = []
                 // console.log('user====',user)
                 user = JSON.parse(user);
-
+                var tempArray = []
+                // console.log(user);
                 if (user.results.bindings) {
                     let response = user.results.bindings;
-                    // console.log(response.length / 3);
-                    for (let i = startingIndex; i < (endingIndex); i++) {
-                        if (i > response.length - 3) {
-                            break;
-                        }
+                    // console.log(response);
+                    response.map((res) => {
+                        var BookTitle1 = res['predicate']['value']
+                        let tempBook, tempPrice, tempAuth = '';
 
-                        arr.push({
-                            'BookId': response[i]['subject']['value'],
-                            'BookTitle': response[i]['object']['value'],
-                            'BookPrice': response[i + 1]['object']['value'],
-                            'AuthorName': response[i + 2]['object']['value']
-                        })
-                        i = i + 2
-                    }
-                    // console.log(arr);
+                        if (BookTitle1.includes('BookTitle')) {
+                            tempBook = res['object']['value']
+                            // console.log(tempBook);
+                            tempArray['Id'] = res['subject']['value']
+                            tempArray['BookId'] = res.predicate.value
+                            tempArray['BookTitle'] = tempBook
+                        }
+                        if (BookTitle1.includes('price')) {
+                            tempPrice = res['object']['value']
+                            tempArray['BookPrice'] = tempPrice
+
+                            arr.push(tempArray)
+                            // console.log("IN PRICE: ", tempArray);
+                            tempArray = []
+
+                        }
+                        if (BookTitle1.includes('AuthorName')) {
+                            tempAuth = res['object']['value']
+                            arr[arr.length - 1]['AuthorName'] = tempAuth
+                            // console.log("IN AUTHOR: ", tempArray);
+                        }
+                    })
                     let totalPage = (response.length / 3) / perPage
                     if (totalPage - parseInt(totalPage) != 0) {
                         totalPage = parseInt(totalPage) + 1
                     }
-                    // console.log(totalPage);
-                    // console.log("current", page);
-                    // console.log("totalPage", totalPage);
                     res.render("bookList", {
                         data: arr,
                         current: page,
@@ -218,7 +230,7 @@ export default class User {
                     }
                     // console.log("**************", response, "**************", body)
                     // res.status(200).json({ message: "Delete data Successfully  ", })
-                    return res.redirect("/bookList/1")
+                    return res.redirect("/newlist/1")
                 });
             // console.log('deletData', deletData)
 
@@ -226,14 +238,13 @@ export default class User {
 
         }
     }
-
     //  Update Data GET //
     editData = (req, res) => {
         try {
-            // console.log('===', req.params.id)
+            // console.log("body params",req.params)
+
             let id = '<' + resourcePrefix + 'Book/' + req.params.id + '>';
             let tableType = '<' + prefix + 'Book>';
-            // console.log(id);
             let get_query = 'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
                 'SELECT  ?BookTitle ?price ?AuthorName ' +
                 'WHERE { ' +
@@ -241,7 +252,7 @@ export default class User {
                 id + ' dc:BookTitle ?BookTitle. ' +
                 id + ' dc:price  ?price. ' +
                 id + ' dc:AuthorName  ?AuthorName. }'
-
+                
             let final_update_query = querystring.stringify({
                 'query': get_query
             })
@@ -266,7 +277,7 @@ export default class User {
 
                     if (body) {
                         let data = JSON.parse(body).results.bindings[0];
-                        // console.log('data',data)
+                        console.log('data',data)
                         return res.render("edit", {
                             data: data
                         })
@@ -282,6 +293,7 @@ export default class User {
 
     editBookData = (req, res) => {
         try {
+            // console.log("body",req.body)
             // console.log('post===', req)
             const id = req.params.id
             let tmpRecordId = create_UUID();
@@ -302,6 +314,7 @@ export default class User {
                 edit_query += prefixId + id + '> dc:price ?price .'
             }
             if ("AuthorName" in req.body) {
+                
                 edit_query += prefixId + id + '> dc:AuthorName ?AuthorName .'
             }
             edit_query += '}' + 'WHERE { '
@@ -346,7 +359,7 @@ export default class User {
                     }
                     // console.log("**************", response, "**************", body)
                     // res.status(200).json({ message: "Update data Successfully" })
-                    return res.redirect("/booklist/1")
+                    return res.redirect("/newlist/1")
                 });
             // console.log('editData', editData)
         } catch (error) {
@@ -369,7 +382,7 @@ export default class User {
                     'WHERE { ' +
                     prefixId + id + '> dc:BookTitle ?BookTitle. ' +
                     prefixId + id + '> dc:price  ?price. ' +
-                    prefixId + id + '> dc:AuthorName  ?AuthorName. }'
+                    'OPTIONAL {' + prefixId + id + '> dc:AuthorName  ?AuthorName. }}'
             });
 
             let getData = request.post(
@@ -393,6 +406,7 @@ export default class User {
                         return res.status(400).json({ message: "Error", })
                     }
                     // return res.status(200).json({ message: "oneRecord Successfully Get ", data: { 'Book Title': bookTitle, 'Book Price': bookPrice } })
+                    // console.log(data);
                     return res.render('view', {
                         data: data
                     })

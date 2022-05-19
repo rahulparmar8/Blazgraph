@@ -26,7 +26,8 @@
                 <%= (i+1) + ((current-1)*5) %>
               </td>
               <td>
-                <a href="/view/<%= item?.BookId?.substring(item.BookId.length - 13, item.BookId.length) %>">
+                
+                <a href="/view/<%= item?.Id?.substring(item.Id.length - 13, item.Id.length) %>">
                   <%= item.BookTitle %>
                 </a>
               </td>
@@ -34,10 +35,12 @@
                 <%= item.BookPrice %>
               </td>
               <td>
+
                 <%= item.AuthorName %>
               </td>
               <td>
-                <a href="/edit/<%= item?.BookId?.substring(item.BookId.length - 13, item.BookId.length) %>">
+               
+                <a href="/edit/<%= item?.Id?.substring(item.Id.length - 13, item.Id.length) %>">
                   <!-- <a href="/edit/<%= item.id %>"></a> -->
                   <button type="button" class="btn btn-outline-info btn-sm">
                     Edit
@@ -45,7 +48,7 @@
                 </a>
               </td>
               <td>
-                <a href="/delet/<%= item?.BookId?.substring(item.BookId.length - 13, item.BookId.length) %>">
+                <a href="/delet/<%= item?.Id?.substring(item.Id.length - 13, item.Id.length) %>">
                   <button type="button" class="btn btn-outline-danger btn-sm">
                     Delete
                   </button>
