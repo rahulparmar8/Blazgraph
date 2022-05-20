@@ -1,6 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser';
-import web from './routes/web.js';
+import book from './routes/book.js';
+import category from './routes/category.js';
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
@@ -25,7 +26,8 @@ app.use(express.static(path.join(__dirname, "views")));
 app.set("view engine", "ejs");
 
 //  Routes    //
-app.use('/', web);
+app.use('/', book);
+app.use('/', category)
 
 app.listen(port, () => {
     console.log(`Server is runing... ${port}`);

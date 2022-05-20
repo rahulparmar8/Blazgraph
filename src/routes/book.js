@@ -5,14 +5,20 @@ import { check } from "express-validator";
 const router = Router();
 const user = new User();
 
+
 router.get("/book", user.addBookpage);
 router.post("/book",
     check("BookTitle", "BookTitle is required. Please enter your response. ")
         .not()
         .isEmpty(),
-    check("price", "Price is required. Please enter your response. ")
+    check("price")
         .not()
-        .isEmpty(),
+        .isEmpty()
+        .trim()
+        .withMessage("Product Price is required.")
+        .bail()
+        .isDecimal()
+        .withMessage("Price must be decimal"),
     check("authorname", "authorname is required. Please enter your response. ")
         .not()
         .optional(),

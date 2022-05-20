@@ -1,0 +1,49 @@
+<%- include('assets/navbar') %>
+    <%- include('assets/header') %>
+
+    <div class="row" style="justify-content: center">
+        <div class="col-sm-6 mt-5">
+            <h2 style="  justify-content: space-between;display: flex" ;  class="alert alert-secondary text-center">
+               Edit Category
+              <a href="/categorylist/1">
+                <button type="button" class="btn btn-outline-info btn-sm">
+                    Category List
+                </button>
+              </a>
+            </h2>
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Name</label>
+                    <input 
+                    value="<%= bodyData?.Name?.value %>"
+                    id="Name" 
+                    name="Name"
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" />
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Description</label>
+                    <textarea class="form-control"
+                        id="Description"
+                        name="description" 
+                        class="form-control" 
+                        autocomplete="off" 
+                        rows="3"><%= bodyData?.Description?.value %>
+                    </textarea>
+                </div>
+
+                <button type="submit" class="btn btn-outline-info">Update</button>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+    <%- include('assets/footer') %>

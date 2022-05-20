@@ -3,7 +3,14 @@
 
     <div class="row" style="justify-content: center">
       <div class="col-sm-6 mt-5">
-        <h2 class="alert alert-secondary text-center">Book List </h2>
+        <h2 style="  justify-content: space-between;display: flex" ; class="alert alert-secondary text-center">
+          Book List
+          <a href="/book">
+            <button type="button" class="btn btn-outline-info btn-sm">
+              AddBook
+            </button>
+          </a>
+        </h2>
 
 
         <table class="table table-striped">
@@ -26,7 +33,7 @@
                 <%= (i+1) + ((current-1)*5) %>
               </td>
               <td>
-                
+
                 <a href="/view/<%= item?.Id?.substring(item.Id.length - 13, item.Id.length) %>">
                   <%= item.BookTitle %>
                 </a>
@@ -39,7 +46,7 @@
                 <%= item.AuthorName %>
               </td>
               <td>
-               
+
                 <a href="/edit/<%= item?.Id?.substring(item.Id.length - 13, item.Id.length) %>">
                   <!-- <a href="/edit/<%= item.id %>"></a> -->
                   <button type="button" class="btn btn-outline-info btn-sm">

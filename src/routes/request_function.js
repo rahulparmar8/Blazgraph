@@ -23,6 +23,7 @@ function book_query(req, cb) {
 
     data_field.BookTitle = BookTitle
     data_field.price = price
+    // data_field = Number(price)
     if (authorname)
         data_field.AuthorName = authorname
     data_field.id = BookId
@@ -66,19 +67,7 @@ function send_request(request_query, request_type, cb) {
             url: 'http://localhost:9999/blazegraph/namespace/test/sparql',
             body: request_query
         }, function (error, response, body) {
-            // console.log('body_______' , body)
-
-            // if (request_type == "get") {
-            //     const data = JSON.parse(body)['results']['bindings']
-            //     console.log("DATA____: ",data);
-
-            //     cb(null, data)
-            // }
-            // else if (request_type == "post") {
-
-            //     cb(null, body)
-            // }
-
+        
             if (error) {
                 cb(error, null)
             }

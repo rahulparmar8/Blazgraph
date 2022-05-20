@@ -1,6 +1,6 @@
 import request from 'request';
 import querystring from 'querystring';
-import { book_query, send_request, create_UUID, } from '../request_function.js'
+import { book_query, send_request, create_UUID, } from '../routes/request_function.js'
 import { validationResult } from "express-validator";
 
 let resourcePrefix = 'http://local.demo.com/#/knowledge/'
@@ -30,7 +30,6 @@ export default class User {
                     alert: errors.array(),
                     bodyData: req.body,
                 });
-
             }
             book_query(req, function (err, response) {
                 if (err) {
@@ -244,7 +243,7 @@ export default class User {
     //  Update Data GET //
     editData = (req, res) => {
         try {
-            console.log("body params", req.params)
+            // console.log("body params", req.params)
 
             let id = '<' + resourcePrefix + 'Book/' + req.params.id + '>';
             let tableType = '<' + prefix + 'Book>';
@@ -400,6 +399,7 @@ export default class User {
                     })
                 });
         } catch (error) {
+            console.log(error);
         }
     }
 }
