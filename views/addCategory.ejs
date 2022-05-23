@@ -7,7 +7,7 @@
                 <h2 style="  justify-content: space-between;display: flex" ;  class="alert alert-secondary text-center">
                    Add Category
                   <a href="/categorylist/1">
-                    <button type="button" class="btn btn-outline-info btn-sm">
+                    <button type="button" class="btn btn-outline-primary btn-sm">
                         CategoryList
                     </button>
                   </a>
@@ -23,6 +23,10 @@
                         class="form-control" 
                         autocomplete="off" />
                     </div>
+                    <% if(typeof alert !='undefined' ) { %> <% alert.forEach(function(error) {
+                        %> <% if(error.param=='Name' ){%>
+                        <div style="color: red"><%= error.msg %></div>
+                        <%} })} %>
                     <div class="mb-3">
                         <label for="exampleFormControlTextarea1" class="form-label">Description</label>
                         <textarea 
@@ -33,8 +37,7 @@
                             type="text" 
                             class="form-control" 
                             autocomplete="off" 
-                            rows="3">
-                        </textarea>
+                            rows="3"></textarea>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Submit</button>

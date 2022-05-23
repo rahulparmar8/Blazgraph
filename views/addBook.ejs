@@ -2,7 +2,14 @@
 
 <div class="row" style="justify-content: center">
   <div class="col-sm-6 mt-5">
-    <h2 class="alert alert-success text-center">Add Book</h2>
+    <h2 style="  justify-content: space-between;display: flex" ; class="alert alert-success text-center">Add Book
+    <a href="/newlist/1">
+      <button type="button" class="btn btn-outline-primary btn-sm">
+        Book List
+      </button>
+    </a>
+    </h2>
+
     <form method="POST">
       <div class="mb-3">
         <label for="booktitle" class="form-label">BookTitle</label>
@@ -47,6 +54,19 @@
         %> <% if(error.param=='AuthorName' ){%>
         <div style="color: red"><%= error.msg %></div>
         <%} })} %>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            Dropdown
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#">Menu item</a></li>
+          </ul>
+        </div>
+
+        <br />
+        <br />
+
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
   </div>

@@ -40,10 +40,10 @@ function book_query(req, cb) {
             var q1 = q1 + BookId + ' dc:' + key + '"' + data_field[key] + '". '
         }
     }
-    // console.log("\nquery-----\n", q1, '\n');
+  
     var q1 = q1 + '} WHERE { BIND(NOW() as ?created )}';
     var query = querystring.stringify({ 'update': q1 });
-
+//   console.log("\nquery-----\n", q1, '\n');
     send_request(query, "post", function (err, user) {
         // return res.json({ user })
         if (err) {

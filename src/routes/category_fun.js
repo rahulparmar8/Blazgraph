@@ -14,11 +14,10 @@ function create_UUID() {
 function Category_query(req, cb) {
 
     const { Name, description } = req.body
-    // console.log(req.body)
+    console.log(req.body)
     var tmpRecordId = create_UUID();
     var tableType = '<' + prefix + 'Category>';
     var CategoryId = '<' + resourcePrefix + 'Category/' + tmpRecordId + '>';
-
     var data_field = {}
 
     data_field.Name = Name
@@ -31,16 +30,16 @@ function Category_query(req, cb) {
     var q1 = 'prefix dc: <http://purl.org/dc/elements/1.1/>' +
         ' INSERT  { ' +
         CategoryId + ' a ' + tableType + '. '
-
     for (var key in data_field) {
         if (data_field.hasOwnProperty(key)) {
 
-            var q1 = q1 + CategoryId + ' dc:' + key + '"' + data_field[key] + '". '
+            var q1 = q1 + CategoryId + ' dc:' + key + '"' + data_field[key] + '".'
         }
     }
-    // console.log("\nquery-----\n", q1, '\n');
     var q1 = q1 + '} WHERE { BIND(NOW() as ?created )}';
     var query = querystring.stringify({ 'update': q1 });
+    // console.log("query-----", q1,);
+
 
     send_request(query, "post", function (err, user) {
         // return res.json({ user })

@@ -45,7 +45,7 @@ export default class User {
     };
 
     //  GET USE  CONSTRUCT All BookList Data    //
-   
+
     newAllBookList = (req, res) => {
         try {
             const perPage = 5;

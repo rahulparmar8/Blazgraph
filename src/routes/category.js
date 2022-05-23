@@ -5,7 +5,8 @@ import Category from "../controllers/category_controller.js";
 const router = Router();
 const category = new Category();
 
-router.get("/categorylist/:page",category.allCategoryList)
+router.get("/categorylist/:page", category.allCategoryList)
+// router.get("newcategorylist/:page",category.newAllCategoryList);
 router.get("/category", category.getCategory);
 router.post("/category",
     check("Name", "Name is required. Please enter your response. ")
