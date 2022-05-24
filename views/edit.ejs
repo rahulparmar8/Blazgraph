@@ -1,59 +1,44 @@
-<%- include('assets/navbar') %> <%- include('assets/header') %>
+<%- include('assets/navbar') %>
+  <%- include('assets/header') %>
 
-<div class="row" style="justify-content: center">
-  <div class="col-sm-6 mt-5">
-    <h2 class="alert alert-secondary text-center">Edit Book</h2>
-    <form method="POST">
-      <div class="mb-3">
-        
-        <label for="booktitle" class="form-label">BookTitle</label>
-        <input
-          value="<%= data?.BookTitle?.value %>"
-          id="booktitle"
-          name="BookTitle"
-          type="text"
-          class="form-control"
-          autocomplete="off"
-        />
+    <div class="row" style="justify-content: center">
+      <div class="col-sm-6 mt-5">
+        <h2 class="alert alert-secondary text-center">Edit Book</h2>
+        <form method="POST">
+          <div class="mb-3">
+
+            <label for="booktitle" class="form-label">BookTitle</label>
+            <input value="<%= data?.BookTitle?.value %>" id="booktitle" name="BookTitle" type="text"
+              class="form-control" autocomplete="off" />
+          </div>
+          <div class="mb-3">
+            <label for="price" class="form-label">Price</label>
+            <input value="<%= data.price.value %>" id="price" name="price" type="text" class="form-control"
+              autocomplete="off" />
+          </div>
+          <div class="mb-3">
+            <label for="AuthorName" class="form-label">Author Name</label>
+            <input value="<%= data?.AuthorName?.value %>" id="AuthorName" name="AuthorName" type="text"
+              class="form-control" autocomplete="off" />
+            </div>
+  
+            <div class="btn-group">
+              <select name="catId" id="users">
+                <option value=0>Select Category</option>
+              <% catList.forEach((users) => { %>
+                <option value="<%= users?.CategoryId %>"
+                  <%= users.CategoryId.substring(users.CategoryId.length - 13, users.CategoryId.length) == data.catId.value.substring(data.catId.value.length - 13, data.catId.value.length) ? 'selected' : '' %> ><%=users.Name %>
+                </option>
+                <% }) %>
+            </select>
+          </div>
+
+          <br />
+          <br />
+
+          <button type="submit" class="btn btn-outline-info">Update</button>
+        </form>
       </div>
-      <div class="mb-3">
-        <label for="price" class="form-label">Price</label>
-        <input
-          value="<%= data.price.value %>"
-          id="price"
-          name="price"
-          type="text"
-          class="form-control"
-          autocomplete="off"
-        />
-      </div> 
-      <div class="mb-3">
-        <label for="AuthorName" class="form-label">Author Name</label>
-        <input
-          value="<%= data?.AuthorName?.value %>"
-          id="AuthorName"
-          name="AuthorName"
-          type="text"
-          class="form-control"
-          autocomplete="off"
-        />
-      </div>
+    </div>
 
-       <div class="btn-group">
-          <select name="catId" id="user" >
-            <option disabled selected> Select Category..</option>
-             <% catList.forEach((users) => { %>
-            <option value="<%= users?.CategoryId %>" > <%=users.Name %> </option>
-            <%  })  %>
-         </select>
-        </div>
-
-      <br /> 
-      <br />
-
-      <button type="submit" class="btn btn-outline-info">Update</button>
-    </form>
-  </div>
-</div>
-
-<%- include('assets/footer') %>
+    <%- include('assets/footer') %>

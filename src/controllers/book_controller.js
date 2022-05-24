@@ -340,35 +340,36 @@ export default class User {
                     });
                     // console.log(query1);
                     send_request(query1, "get", function (err, user) {
-        
+
                         if (err) {
                             res.status(400).json({ message: "error" });
                         }
                         let arr = [];
                         // console.log(user);
                         user = JSON.parse(user);
-        
+                        // let selectedCat = []
+
                         if (user.results.bindings) {
                             let response = user.results.bindings;
                             // console.log(response);
-        
-        
+
                             const data = response.map(res => {
+
                                 return {
                                     Name: res.Name.value,
                                     Description: res.Description?.value,
                                     CategoryId: res.categoryId?.value
-        
                                 }
                             })
 
-                        console.log('data', bodydata)
-                        console.log('lisrt', data)
+                            // console.log('data', bodydata)
+                            // console.log('lisrt', data)
 
 
                             res.render("edit", {
                                 data: bodydata,
                                 catList: data,
+                                // selectedCat: selectedCat[0]
                             })
                         }
                     });

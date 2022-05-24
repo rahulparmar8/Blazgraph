@@ -57,10 +57,14 @@
 
         <div class="btn-group">
           <select name="catId" id="user" >
+           
             <option disabled selected> Select Category..</option>
+           
              <% catList.forEach((users) => { %>
-            <option value="<%= users?.CategoryId %>" > <%=users.Name %> </option>
-            <%  })  %>
+            <option  value="<%= users?.CategoryId %>" > <%=users.Name %> </option>
+            <% }) %>
+          
+           
          </select>
         </div>
 
