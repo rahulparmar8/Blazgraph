@@ -7,30 +7,78 @@ let resourcePrefix = 'http://local.demo.com/#/knowledge/'
 let prefix = 'https://ontology.demo.com/2016/04/demo#';
 
 
+let catListData;
+
 export default class User {
 
     //  AddBook page //
     addBookpage = (req, res) => {
         try {
-            return res.render("addBook", {
-                bodyData: req.body
-            })
+            let tableType = "<" + prefix + "Category>";
+
+
+            let query1 = querystring.stringify({
+                'query': 'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
+                    'SELECT ?categoryId ?Name ?Description ' +
+                    'WHERE { ' +
+                    '?categoryId a ' + tableType + ' .' +
+                    '?categoryId dc:Name ?Name. ' +
+                    // '?categoryId dc:Description  ?Description. }'
+                    'OPTIONAL { ?categoryId dc:Description  ?Description .}}'
+            });
+            // console.log(query1);
+            send_request(query1, "get", function (err, user) {
+
+                if (err) {
+                    res.status(400).json({ message: "error" });
+                }
+                let arr = [];
+                // console.log(user);
+                user = JSON.parse(user);
+
+                if (user.results.bindings) {
+                    let response = user.results.bindings;
+                    // console.log(response);
+
+
+                    const data = response.map(res => {
+                        return {
+                            Name: res.Name.value,
+                            Description: res.Description?.value,
+                            CategoryId: res.categoryId?.value
+                        }
+                    })
+                    // console.log(data)
+                    catListData = data;
+
+                    return res.render("addBook", {
+                        bodyData: req.body,
+                        catList: data,
+                    })
+
+                }
+            });
+
         } catch (error) {
             console.log(error);
         }
     };
+
+
 
     //  AddBook API //
     addBook = (req, res) => {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-
                 return res.render("addBook", {
                     alert: errors.array(),
                     bodyData: req.body,
+                    catList: catListData
+
                 });
             }
+
             book_query(req, function (err, response) {
                 if (err) {
                     res.status(400).json({ message: "error", })
@@ -243,18 +291,19 @@ export default class User {
     //  Update Data GET //
     editData = (req, res) => {
         try {
-            // console.log("body params", req.params)
+            // console.log("body params",req.params)
 
             let id = '<' + resourcePrefix + 'Book/' + req.params.id + '>';
             let tableType = '<' + prefix + 'Book>';
             let get_query = 'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
-                'SELECT  ?BookTitle ?price ?AuthorName ' +
+                'SELECT  ?BookTitle ?price ?catId ?AuthorName ' +
                 'WHERE { ' +
                 id + ' a ' + tableType + ' .' +
                 id + ' dc:BookTitle ?BookTitle. ' +
                 id + ' dc:price  ?price. ' +
-                // id + ' dc:AuthorName  ?AuthorName. }'
-                'OPTIONAL {' + id + ' dc:AuthorName  ?AuthorName. }}'
+                id + ' dc:catId  ?catId. ' +
+                id + ' dc:AuthorName  ?AuthorName. }'
+
             let final_update_query = querystring.stringify({
                 'query': get_query
             })
@@ -275,15 +324,64 @@ export default class User {
                     }
                     // console.log("**************", response, "**************", body)
                     // res.status(200).json({ message:response})
+                    // return res.redirect("edit")
+                    let bodydata = JSON.parse(body).results.bindings[0];
 
-                    if (body) {
-                        let data = JSON.parse(body).results.bindings[0];
-                        // console.log('data----------', data)
-                        return res.render("edit", {
-                            data: data
-                        })
-                    }
+                    let tableType = "<" + prefix + "Category>";
+
+                    let query1 = querystring.stringify({
+                        'query': 'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
+                            'SELECT ?categoryId ?Name ?Description ' +
+                            'WHERE { ' +
+                            '?categoryId a ' + tableType + ' .' +
+                            '?categoryId dc:Name ?Name. ' +
+                            // '?categoryId dc:Description  ?Description. }'
+                            'OPTIONAL { ?categoryId dc:Description  ?Description .}}'
+                    });
+                    // console.log(query1);
+                    send_request(query1, "get", function (err, user) {
+        
+                        if (err) {
+                            res.status(400).json({ message: "error" });
+                        }
+                        let arr = [];
+                        // console.log(user);
+                        user = JSON.parse(user);
+        
+                        if (user.results.bindings) {
+                            let response = user.results.bindings;
+                            // console.log(response);
+        
+        
+                            const data = response.map(res => {
+                                return {
+                                    Name: res.Name.value,
+                                    Description: res.Description?.value,
+                                    CategoryId: res.categoryId?.value
+        
+                                }
+                            })
+
+                        console.log('data', bodydata)
+                        console.log('lisrt', data)
+
+
+                            res.render("edit", {
+                                data: bodydata,
+                                catList: data,
+                            })
+                        }
+                    });
+
+                    // if (body) {
+                    //     let data = JSON.parse(body).results.bindings[0];
+                    //     console.log('data', data)
+                    //     return res.render("edit", {
+                    //         data: data
+                    //     })
+                    // }
                 });
+            // console.log('editData', editData)
         } catch (error) {
             console.log(error)
         }

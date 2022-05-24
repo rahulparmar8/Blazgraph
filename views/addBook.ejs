@@ -4,7 +4,7 @@
   <div class="col-sm-6 mt-5">
     <h2 style="  justify-content: space-between;display: flex" ; class="alert alert-success text-center">Add Book
     <a href="/newlist/1">
-      <button type="button" class="btn btn-outline-primary btn-sm">
+      <button type="button" class="btn btn-primary btn-sm">
         Book List
       </button>
     </a>
@@ -56,12 +56,12 @@
         <%} })} %>
 
         <div class="btn-group">
-          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li><a class="dropdown-item" href="#">Menu item</a></li>
-          </ul>
+          <select name="catId" id="user" >
+            <option disabled selected> Select Category..</option>
+             <% catList.forEach((users) => { %>
+            <option value="<%= users?.CategoryId %>" > <%=users.Name %> </option>
+            <%  })  %>
+         </select>
         </div>
 
         <br />

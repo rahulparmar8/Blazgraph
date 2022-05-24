@@ -8,7 +8,7 @@ const user = new User();
 
 router.get("/book", user.addBookpage);
 router.post("/book",
-    check("BookTitle", "BookTitle is required. Please enter your response. ")
+    check("BookTitle", "BookTitle is required. Please enter your response.")
         .not()
         .isEmpty(),
     check("price")
@@ -19,7 +19,7 @@ router.post("/book",
         .bail()
         .isDecimal()
         .withMessage("Price must be decimal"),
-    check("authorname", "authorname is required. Please enter your response. ")
+    check("authorname", "authorname is required. Please enter your response.")
         .not()
         .optional(),
     user.addBook);

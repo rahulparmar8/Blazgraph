@@ -13,7 +13,18 @@ function create_UUID() {
 //  Query Generate  //
 function book_query(req, cb) {
 
-    const { BookTitle, price, authorname } = req.body
+    const { BookTitle, price, authorname, catId } = req.body
+
+    let prefixId = "<http://local.demo.com/#/knowledge/Category/";
+
+    let getCategory_query = querystring.stringify({
+        query:
+            "prefix dc: <http://purl.org/dc/elements/1.1/> " +
+            "SELECT ?catId  " +
+            "WHERE { " + prefixId + catId + "> dc:catId ?catId. }"
+    });
+
+
     // console.log(req.body)
     var tmpRecordId = create_UUID();
     var tableType = '<' + prefix + 'Book>';
@@ -23,7 +34,9 @@ function book_query(req, cb) {
 
     data_field.BookTitle = BookTitle
     data_field.price = price
-    // data_field = Number(price)
+    data_field.catId = catId ? catId : '';
+
+
     if (authorname)
         data_field.AuthorName = authorname
     data_field.id = BookId
@@ -40,10 +53,10 @@ function book_query(req, cb) {
             var q1 = q1 + BookId + ' dc:' + key + '"' + data_field[key] + '". '
         }
     }
-  
+
     var q1 = q1 + '} WHERE { BIND(NOW() as ?created )}';
     var query = querystring.stringify({ 'update': q1 });
-//   console.log("\nquery-----\n", q1, '\n');
+    //   console.log("\nquery-----\n", q1, '\n');
     send_request(query, "post", function (err, user) {
         // return res.json({ user })
         if (err) {
@@ -67,7 +80,7 @@ function send_request(request_query, request_type, cb) {
             url: 'http://localhost:9999/blazegraph/namespace/test/sparql',
             body: request_query
         }, function (error, response, body) {
-        
+
             if (error) {
                 cb(error, null)
             }

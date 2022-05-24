@@ -39,6 +39,18 @@
         />
       </div>
 
+       <div class="btn-group">
+          <select name="catId" id="user" >
+            <option disabled selected> Select Category..</option>
+             <% catList.forEach((users) => { %>
+            <option value="<%= users?.CategoryId %>" > <%=users.Name %> </option>
+            <%  })  %>
+         </select>
+        </div>
+
+      <br /> 
+      <br />
+
       <button type="submit" class="btn btn-outline-info">Update</button>
     </form>
   </div>
