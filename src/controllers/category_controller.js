@@ -241,7 +241,7 @@ export default class Category {
             var data_field = {};
             data_field.Name = Name;
             if (Description) data_field.Description = Description;
-            console.log("id++++++++++", id);
+            // console.log("id++++++++++", id);
             let edit_query =
                 "prefix dc: <http://purl.org/dc/elements/1.1/> " + "DELETE { ";
             edit_query += prefixId + id + "> dc:Name ?Name .";
@@ -258,7 +258,7 @@ export default class Category {
             edit_query += prefixId + id + "> dc:Name ?Name .";
             edit_query +=
                 "OPTIONAL {" + prefixId + id + "> dc:Description  ?Description. }}";
-            console.log(edit_query);
+            // console.log(edit_query);
             let edit_data = querystring.stringify({
                 update: edit_query,
             });

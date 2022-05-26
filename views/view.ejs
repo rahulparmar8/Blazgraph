@@ -19,11 +19,16 @@
       <div class="mb-3">
         <label for="AuthorName" class="form-label">Author :-</label>
         <label
-        
         for="AuthorName" class="form-label"><%= data.AuthorName.value %></label>
       </div>
       <% } %>
-    
+      <% if (data.AuthorName) { %>
+      <div class="mb-3">
+        <label for=Name" class="form-label">Category Name :-</label>
+        <label
+        for="Name" class="form-label"><%= data.catId.value %></label>
+      </div>
+      <% } %>
     </form>
   </div>
 </div>

@@ -15,13 +15,13 @@ function book_query(req, cb) {
 
     const { BookTitle, price, authorname, catId } = req.body
 
-    let prefixId = "<http://local.demo.com/#/knowledge/Category/";
+    let prefixId = '<http://local.demo.com/#/knowledge/Category/' + catId + '>';
 
     let getCategory_query = querystring.stringify({
         query:
-            "prefix dc: <http://purl.org/dc/elements/1.1/> " +
-            "SELECT ?catId  " +
-            "WHERE { " + prefixId + catId + "> dc:catId ?catId. }"
+            'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
+            'SELECT ?catId  ' +
+            'WHERE { ' + prefixId + ' dc:catId ?catId. }'
     });
 
 
@@ -29,12 +29,15 @@ function book_query(req, cb) {
     var tmpRecordId = create_UUID();
     var tableType = '<' + prefix + 'Book>';
     var BookId = '<' + resourcePrefix + 'Book/' + tmpRecordId + '>';
-
+    var id = '<' + resourcePrefix + 'Book/' + tmpRecordId + '>';
     var data_field = {}
 
     data_field.BookTitle = BookTitle
     data_field.price = price
-    data_field.catId = catId ? catId : '';
+    // data_field.catId = catId ? catId : '';
+    if (catId) {
+        data_field.catId = catId ? '<' + catId + '>' : '';
+    }
 
 
     if (authorname)
@@ -44,17 +47,24 @@ function book_query(req, cb) {
 
 
     var q1 = 'prefix dc: <http://purl.org/dc/elements/1.1/>' +
+        'prefix demo: <https://ontology.demo.com/2016/04/demo#>' +
         ' INSERT  { ' +
         BookId + ' a ' + tableType + '. '
 
     for (var key in data_field) {
         if (data_field.hasOwnProperty(key)) {
 
-            var q1 = q1 + BookId + ' dc:' + key + '"' + data_field[key] + '". '
+            if (key == 'catId') {
+                q1 = q1 + BookId + ' demo:' + key + '"' + data_field[key] + '". '
+            }
+            else {
+                q1 = q1 + BookId + ' dc:' + key + '"' + data_field[key] + '". '
+            }
         }
     }
 
     var q1 = q1 + '} WHERE { BIND(NOW() as ?created )}';
+    console.log('q1', q1)
     var query = querystring.stringify({ 'update': q1 });
     //   console.log("\nquery-----\n", q1, '\n');
     send_request(query, "post", function (err, user) {

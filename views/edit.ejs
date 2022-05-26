@@ -13,6 +13,7 @@
           </div>
           <div class="mb-3">
             <label for="price" class="form-label">Price</label>
+            
             <input value="<%= data.price.value %>" id="price" name="price" type="text" class="form-control"
               autocomplete="off" />
           </div>
@@ -21,13 +22,21 @@
             <input value="<%= data?.AuthorName?.value %>" id="AuthorName" name="AuthorName" type="text"
               class="form-control" autocomplete="off" />
             </div>
-  
+            
+            <%  temcatid = "";
+            if(data.catId && data.catId.value){
+              temcatid = data.catId.value
+            }
+            %>
+           
             <div class="btn-group">
               <select name="catId" id="users">
-                <option value=0>Select Category</option>
+                <option value= >Select cetegory</option>
               <% catList.forEach((users) => { %>
                 <option value="<%= users?.CategoryId %>"
-                  <%= users.CategoryId.substring(users.CategoryId.length - 13, users.CategoryId.length) == data.catId.value.substring(data.catId.value.length - 13, data.catId.value.length) ? 'selected' : '' %> ><%=users.Name %>
+                  <%= users.CategoryId.substring(users.CategoryId.length - 13, users.CategoryId.length) == temcatid.substring(temcatid.length - 13,temcatid.length) ? 'selected' : '' %> >
+                  <%=users.Name %>
+          
                 </option>
                 <% }) %>
             </select>

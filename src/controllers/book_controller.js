@@ -2,6 +2,7 @@ import request from 'request';
 import querystring from 'querystring';
 import { book_query, send_request, create_UUID, } from '../routes/request_function.js'
 import { validationResult } from "express-validator";
+import { response } from 'express';
 
 let resourcePrefix = 'http://local.demo.com/#/knowledge/'
 let prefix = 'https://ontology.demo.com/2016/04/demo#';
@@ -96,32 +97,42 @@ export default class User {
 
     newAllBookList = (req, res) => {
         try {
+
             const perPage = 5;
             const page = req.params.page || 1;
+
             const startingIndex = perPage * (page - 1) * 3
             const endingIndex = ((page * perPage) * 3) - 1
             let tableType = '<' + prefix + 'Book>';
 
+            let query1 =
+                'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
+                'prefix demo: <https://ontology.demo.com/2016/04/demo#> ' +
+                'CONSTRUCT {' +
+                '?BookId  dc:BookTitle ?BookTitle .' +
+                '?BookId  dc:price ?price .' +
+                '?BookId  demo:catid ?catId .' +
+                '?BookId  dc:AuthorName ?AuthorName .' +
+                '?catId dc:Name ?catName;}' +
+                'WHERE { ' +
+                '?BookId a ' + tableType + ' .' +
+                '?BookId  dc:BookTitle ?BookTitle. ' +
+                '?BookId  dc:price  ?price.' +
+                'OPTIONAL { ?BookId demo:catId  ?catId. }' +
+                'OPTIONAL { ?BookId dc:AuthorName  ?AuthorName .}' +
+                'OPTIONAL { ?catId dc:Name  ?catName. }}';
 
-            let query1 = querystring.stringify({
-                'query': 'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
-                    'CONSTRUCT {' +
-                    '?BookId  dc:BookTitle ?BookTitle .' +
-                    '?BookId  dc:price ?price .' +
-                    '?BookId  dc:AuthorName ?AuthorName ;}' +
-                    'WHERE { ' +
-                    '?BookId a ' + tableType + ' .' +
-                    '?BookId  dc:BookTitle ?BookTitle. ' +
-                    '?BookId  dc:price  ?price.' +
-                    'OPTIONAL { ?BookId dc:AuthorName  ?AuthorName .}}'
-            });
-            // console.log('query====', query1)
-            send_request(query1, "get", function (err, user) {
+            //  console.log('query====', query1)
+            var q1 = querystring.stringify({
+                'query': query1
+            })
+            //  console.log(q1);
+            send_request(q1, "get", function (err, user) {
                 // console.log("*************",user);
                 if (err) {
                     res.status(400).json({ message: "error", })
                 }
-
+                // console.log(user);
 
                 let arr = []
                 // console.log('user====',user)
@@ -133,11 +144,11 @@ export default class User {
                     // console.log(response);
                     response.map((res) => {
                         var BookTitle1 = res['predicate']['value']
-                        let tempBook, tempPrice, tempAuth = '';
+                        // console.log("**************",res)
+                        let tempBook, tempPrice, tempAuth = '', tempCatName = '';
 
                         if (BookTitle1.includes('BookTitle')) {
                             tempBook = res['object']['value']
-                            // console.log(tempBook);
                             tempArray['Id'] = res['subject']['value']
                             tempArray['BookId'] = res.predicate.value
                             tempArray['BookTitle'] = tempBook
@@ -147,7 +158,6 @@ export default class User {
                             tempArray['BookPrice'] = tempPrice
 
                             arr.push(tempArray)
-                            // console.log("IN PRICE: ", tempArray);
                             tempArray = []
 
                         }
@@ -156,11 +166,22 @@ export default class User {
                             arr[arr.length - 1]['AuthorName'] = tempAuth
                             // console.log("IN AUTHOR: ", tempArray);
                         }
+                        if (BookTitle1.includes('Name')) {
+                            tempCatName = res['object']['value']
+                            arr[arr.length - 1]['Name'] = tempCatName
+                            // console.log("IN AUTHOR: ", tempCatName);
+                        }
                     })
                     let totalPage = (response.length / 3) / perPage
                     if (totalPage - parseInt(totalPage) != 0) {
                         totalPage = parseInt(totalPage) + 1
                     }
+
+                    // console.log("IN arr: ", arr);
+                    // console.log("IN arr: ", arr);
+
+
+
                     res.render("bookList", {
                         data: arr,
                         current: page,
@@ -291,19 +312,20 @@ export default class User {
     //  Update Data GET //
     editData = (req, res) => {
         try {
-            // console.log("body params",req.params)
-
+            // console.log(req.body);
             let id = '<' + resourcePrefix + 'Book/' + req.params.id + '>';
             let tableType = '<' + prefix + 'Book>';
             let get_query = 'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
+
                 'SELECT  ?BookTitle ?price ?catId ?AuthorName ' +
                 'WHERE { ' +
                 id + ' a ' + tableType + ' .' +
                 id + ' dc:BookTitle ?BookTitle. ' +
                 id + ' dc:price  ?price. ' +
-                id + ' dc:catId  ?catId. ' +
-                id + ' dc:AuthorName  ?AuthorName. }'
-
+                'OPTIONAL { ' + id + ' dc:catId  ?catId. }' +
+                // id + ' dc:AuthorName  ?AuthorName. }'
+                'OPTIONAL { ' + id + ' dc:AuthorName  ?AuthorName .}}'
+            // console.log(get_query);
             let final_update_query = querystring.stringify({
                 'query': get_query
             })
@@ -326,7 +348,7 @@ export default class User {
                     // res.status(200).json({ message:response})
                     // return res.redirect("edit")
                     let bodydata = JSON.parse(body).results.bindings[0];
-
+                    // console.log(bodydata);
                     let tableType = "<" + prefix + "Category>";
 
                     let query1 = querystring.stringify({
@@ -358,7 +380,7 @@ export default class User {
                                 return {
                                     Name: res.Name.value,
                                     Description: res.Description?.value,
-                                    CategoryId: res.categoryId?.value
+                                    CategoryId: `<${res.categoryId?.value}>`
                                 }
                             })
 
@@ -396,21 +418,25 @@ export default class User {
             let BookTitle = req.body.BookTitle
             let price = req.body.price
             let AuthorName = req.body.AuthorName
+            let CategoryId = req.body.catId
             let prefixId = "<http://local.demo.com/#/knowledge/Book/"
-            //  console.log(id);
+            // console.log(CategoryId);
 
             var data_field = {}
             data_field.BookTitle = BookTitle
             data_field.price = price
+            // console.log("before",data_field);
             if (AuthorName)
                 data_field.AuthorName = AuthorName
-
-            // console.log(BookTitle);
+            if (CategoryId)
+                data_field.catId = CategoryId
+            // console.log("after",data_field);
             let edit_query = 'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
                 'DELETE { '
             edit_query += prefixId + id + '> dc:BookTitle ?BookTitle .'
             edit_query += prefixId + id + '> dc:price ?price .'
             edit_query += prefixId + id + '> dc:AuthorName ?AuthorName .'
+            edit_query += prefixId + id + '> dc:catId ?CategoryId .'
 
             edit_query += '} INSERT {'
             for (var key in data_field) {
@@ -419,9 +445,10 @@ export default class User {
                 }
             }
             edit_query += '}' + 'WHERE { '
-            edit_query += prefixId + id + '> dc:BookTitle ?BookTitle .'
-            edit_query += prefixId + id + '> dc:price ?price .'
-            edit_query += 'OPTIONAL {' + prefixId + id + '> dc:AuthorName  ?AuthorName. }}'
+            edit_query += 'OPTIONAL{' + prefixId + id + '> dc:BookTitle ?BookTitle .}'
+            edit_query += 'OPTIONAL{' + prefixId + id + '> dc:price ?price .}'
+            edit_query += 'OPTIONAL{' + prefixId + id + '> dc:AuthorName  ?AuthorName. } '
+            edit_query += 'OPTIONAL{' + prefixId + id + '> dc:catId ?CategoryId .}}'
             // edit_query += prefixId + id + '> dc:AuthorName ?AuthorName .}'
 
             // edit_query += prefixId + id + '> dc:BookTitle "' + BookTitle + '" .'
@@ -433,7 +460,7 @@ export default class User {
             let edit_data = querystring.stringify({
                 'update': edit_query
             })
-            // console.log("query----------",edit_query)
+            console.log("query----------", edit_query)
             request.post(
                 {
                     headers: {
@@ -462,19 +489,27 @@ export default class User {
 
     oneRecordGet = (req, res) => {
         try {
+
             const id = req.params.id
             let tmpRecordId = create_UUID();
             let tableType = '<' + prefix + 'Book>';
             let prefixId = "<http://local.demo.com/#/knowledge/Book/"
 
-            let get_query = querystring.stringify({
-                'query': 'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
-                    'SELECT ?BookTitle ?price ?AuthorName ' +
-                    'WHERE { ' +
-                    prefixId + id + '> dc:BookTitle ?BookTitle. ' +
-                    prefixId + id + '> dc:price  ?price. ' +
-                    'OPTIONAL {' + prefixId + id + '> dc:AuthorName  ?AuthorName. }}'
-            });
+            let get_query =
+                'prefix dc: <http://purl.org/dc/elements/1.1/> ' +
+                'prefix demo: <https://ontology.demo.com/2016/04/demo#> ' +
+                'SELECT ?BookTitle ?price ?catId ?AuthorName ?catName ' +
+                'WHERE { ' +
+                prefixId + id + '> dc:BookTitle ?BookTitle. ' +
+                prefixId + id + '> dc:price  ?price. ' +
+                'OPTIONAL { ' + prefixId + id + '> demo:catId  ?catId. } ' +
+                'OPTIONAL {' + prefixId + id + '> dc:AuthorName  ?AuthorName. }' +
+                'OPTIONAL { ?catId dc:Name ?catName .}}'
+
+            console.log(get_query);
+            var q1 = querystring.stringify({
+                'query': get_query
+            })
 
             let getData = request.post(
                 {
@@ -483,16 +518,17 @@ export default class User {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
                     },
                     url: 'http://localhost:9999/blazegraph/namespace/test/sparql',
-                    body: get_query
+                    body: q1
                 },
                 function (error, response, body) {
                     let data = JSON.parse(body)['results']['bindings'][0]
-
+                    // console.log(data);
                     if (error) {
                         return res.status(400).json({ message: "Error", })
                     }
                     // return res.status(200).json({ message: "oneRecord Successfully Get ", data: { 'Book Title': bookTitle, 'Book Price': bookPrice } })
                     // console.log(data);
+
                     return res.render('view', {
                         data: data
                     })
